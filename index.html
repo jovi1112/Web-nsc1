@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad Discord</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --violet-primary: #6a0dad;
+            --violet-dark: #4b0082;
+            --violet-light: #8a2be2;
+            --black-primary: #121212;
+            --black-secondary: #1e1e1e;
+            --text-light: #f0f0f0;
+            --text-gray: #b0b0b0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--black-primary), var(--violet-dark));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            perspective: 1000px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--violet-primary);
+            box-shadow: 0 0 20px rgba(106, 13, 173, 0.5);
+            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(10deg); }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--violet-primary), var(--violet-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(106, 13, 173, 0.3);
+            animation: textGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from { filter: drop-shadow(0 0 5px rgba(106, 13, 173, 0.5)); }
+            to { filter: drop-shadow(0 0 15px rgba(106, 13, 173, 0.8)); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        .discord-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, var(--violet-primary), var(--violet-light));
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.8s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discord-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .discord-btn:hover::before {
+            left: 100%;
+        }
+
+        .discord-btn i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .discord-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(106, 13, 173, 0.8);
+        }
+
+        .section {
+            background-color: var(--black-secondary);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(106, 13, 173, 0.2);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--violet-light);
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease 0.3s;
+        }
+
+        .section.visible .section-title {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--violet-primary), var(--violet-light));
+            border-radius: 3px;
+            transition: transform 0.6s ease 0.6s;
+        }
+
+        .section.visible .section-title::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .team-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .team-member {
+            background: linear-gradient(145deg, var(--black-primary), var(--black-secondary));
+            border-radius: 15px;
+            padding: 25px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(106, 13, 173, 0.3);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+        }
+
+        .section.visible .team-member {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .section.visible .team-member:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+
+        .section.visible .team-member:nth-child(2) {
+            transition-delay: 0.4s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(106, 13, 173, 0.3);
+        }
+
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--violet-primary);
+            margin: 0 auto 15px;
+            transition: all 0.3s ease;
+        }
+
+        .team-member:hover .member-photo {
+            transform: scale(1.05);
+            border-color: var(--violet-light);
+        }
+
+        .member-name {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--violet-light);
+        }
+
+        .member-role {
+            font-size: 1rem;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .member-description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-light);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, var(--black-primary), var(--black-secondary));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(106, 13, 173, 0.2);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .section.visible .feature-card {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section.visible .feature-card:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+
+        .section.visible .feature-card:nth-child(2) {
+            transition-delay: 0.4s;
+        }
+
+        .section.visible .feature-card:nth-child(3) {
+            transition-delay: 0.6s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(106, 13, 173, 0.3);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--violet-primary);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover i {
+            transform: scale(1.1);
+            color: var(--violet-light);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            color: var(--violet-light);
+        }
+
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .stat {
+            text-align: center;
+            margin: 15px;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .section.visible .stat {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .section.visible .stat:nth-child(1) {
+            transition: all 0.6s ease 0.3s;
+        }
+
+        .section.visible .stat:nth-child(2) {
+            transition: all 0.6s ease 0.5s;
+        }
+
+        .section.visible .stat:nth-child(3) {
+            transition: all 0.6s ease 0.7s;
+        }
+
+        .section.visible .stat:nth-child(4) {
+            transition: all 0.6s ease 0.9s;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--violet-primary);
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-gray);
+        }
+
+        .community-highlight {
+            text-align: center;
+            background: linear-gradient(145deg, var(--violet-primary), var(--violet-light));
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+            opacity: 0;
+            transform: scaleX(0);
+            transition: all 0.6s ease 0.2s;
+        }
+
+        .section.visible .community-highlight {
+            opacity: 1;
+            transform: scaleX(1);
+        }
+
+        .relaxed-badge {
+            display: inline-block;
+            background: rgba(106, 13, 173, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            animation: gentlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(106, 13, 173, 0.2);
+            width: 100%;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1.5s forwards;
+        }
+
+        .content-text {
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease 0.4s;
+        }
+
+        .section.visible .content-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+            
+            .team-member, .feature-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="https://cdn.discordapp.com/icons/1436879314544103558/a6130e9e84227b5eb1063fad3eb9c2a0.png?size=2048" alt="Logo de la Comunidad" class="logo">
+            </div>
+            
+            <h1>Comunidad Discord</h1>
+            <p class="tagline">Un espacio relajado para Roblox y socialización</p>
+            
+            <div class="relaxed-badge">
+                🌙 Comunidad tranquila y sin presión
+            </div>
+            
+            <a href="https://discord.gg/hqFP4Mgp33" class="discord-btn" target="_blank">
+                <i class="fab fa-discord"></i> Únete cuando quieras
+            </a>
+        </header>
+        
+        <section class="section">
+            <h2 class="section-title">Sobre Nosotros</h2>
+            
+            <div class="community-highlight">
+                Comunidad íntima de +30 miembros - Sin compromisos
+            </div>
+            
+            <p class="content-text">
+                Somos una comunidad relajada de Discord enfocada en Roblox y socialización. 
+                No somos ultra-activos, pero cuando estamos conectados creamos un ambiente 
+                acogedor donde puedes hacer amigos y jugar sin presión. ¡Únete cuando quieras!
+            </p>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="membersCount">0</div>
+                    <div class="stat-label">Miembros</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Canales</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">Tranquila</div>
+                    <div class="stat-label">Actividad</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">2025</div>
+                    <div class="stat-label">Fundación</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">Nuestro Equipo</h2>
+            <div class="team-container">
+                <div class="team-member">
+                    <img src="https://cdn.discordapp.com/avatars/1400578554273468427/cdc2fe2b4cb7f8baead10f75d6e083bb.png?size=2048" alt="Foto de 604" class="member-photo">
+                    <h3 class="member-name">604</h3>
+                    <p class="member-role">Fundador</p>
+                    <p class="member-description">Especializado en programación, ciberseguridad y un ser amable.</p>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://cdn.discordapp.com/attachments/1431395841800798218/1439376143689187410/e72f1bcdb175cc269227264096cb8270.png?ex=691a4afe&is=6918f97e&hm=0dfd5f9a23f02e71096e33b017cfa0996b1e0dc683c4b722dd58d1db07cfed7b&" alt="Foto de Nachy Perr" class="member-photo">
+                    <h3 class="member-name">nachyperr</h3>
+                    <p class="member-role">Staff</p>
+                    <p class="member-description">El viola cabras...</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">¿Por Qué Unirte?</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <i class="fas fa-gamepad"></i>
+                    <h3>Roblox Relajado</h3>
+                    <p>Juega Roblox sin presión. Partidas casuales cuando la gente está conectada.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Chat Tranquilo</h3>
+                    <p>Conversaciones relajadas sin la presión de tener que estar siempre activo.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-couch"></i>
+                    <h3>Ambiente Cómodo</h3>
+                    <p>Un espacio donde puedes entrar y salir cuando quieras, sin compromisos.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>© 2025 Comunidad Discord. Un espacio relajado para todos. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const contentTexts = document.querySelectorAll('.content-text');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            contentTexts.forEach(text => {
+                observer.observe(text);
+            });
+
+            const memberCount = document.getElementById('membersCount');
+            let count = 0;
+            const target = 30;
+            const duration = 3000;
+            
+            const updateCount = () => {
+                if (count < target) {
+                    count++;
+                    memberCount.textContent = `+${count}`;
+                    setTimeout(updateCount, duration / target);
+                }
+            };
+            
+            const statsSection = document.querySelector('.section');
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(updateCount, 500);
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            statsObserver.observe(statsSection);
+
+            const tagline = document.querySelector('.tagline');
+            const originalText = tagline.textContent;
+            tagline.textContent = '';
+            let charIndex = 0;
+
+            function typeWriter() {
+                if (charIndex < originalText.length) {
+                    tagline.textContent += originalText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 50);
+                }
+            }
+
+            setTimeout(typeWriter, 1500);
+        });
+    </script>
+</body>
+</html>
